@@ -34,7 +34,7 @@ const Highlights = () => {
       <div className='screen-max-width '>
         <div className='w-full mb-12 md:flex justify-between items-center'>
           <h1 id='title' className='section-heading '>
-            Get the highlights. 
+            Get the highlights.
           </h1>
           <div className='flex flex-wrap items-end gap-5 '>
             <p className=' link  '>

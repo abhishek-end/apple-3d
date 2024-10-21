@@ -51,41 +51,55 @@ const VideoComponents = () => {
   const handleProcess = (type, i) => {
     switch (type) {
       case "video-end":
-        setVideo((prevVideo) => ({
-          ...prevVideo,
-          isEnd: true,
-          videoId: i + 1,
-        }));
+        setVideo((pre) => ({ ...pre, isEnd: true, videoId: i + 1 }));
         break;
+
       case "video-last":
-        setVideo((prevVideo) => ({
-          ...prevVideo,
-          isLastVideo: true,
-        }));
+        setVideo((pre) => ({ ...pre, isLastVideo: true }));
         break;
+
       case "video-reset":
-        setVideo((prevVideo) => ({
-          ...prevVideo,
-          isLastVideo: true,
-        }));
+        setVideo((pre) => ({ ...pre, videoId: 0, isLastVideo: false }));
         break;
+
+      case "pause":
+        setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
+        break;
+
       case "play":
-        setVideo((prevVideo) => ({
-          ...prevVideo,
-          isPlaying: !isPlaying,
-        }));
+        setVideo((pre) => ({ ...pre, isPlaying: !pre.isPlaying }));
         break;
 
       default:
         return video;
     }
   };
+
   useEffect(() => {
-    const currentProgress = 0;
-    const span = videoSpanRef.current;
+    let currentProgress = 0;
+    let span = videoSpanRef.current;
     if (span[videoId]) {
       let anim = gsap.to(span[videoId], {
-        onUpdate: () => {},
+        onUpdate: () => {
+          const progress = Math.ceil(anim.progress() * 100);
+          if (progress != currentProgress) {
+            currentProgress = progress;
+
+            gsap.to(VideoDivRef.current[videoId], {
+              width:
+                window.innerWidth < 760
+                  ? "10vw"
+                  : window.innerWidth < 1200
+                  ? "10vw"
+                  : "4vw",
+            });
+            gsap.to(span[videoId], {
+              width: `${currentProgress}%`,
+              backgroundColor: "gray",
+            });
+          }
+        },
+
         onComplete: () => {},
       });
     }
@@ -117,7 +131,7 @@ const VideoComponents = () => {
                   <source src={list.video} type='video/mp4' />
                 </video>
               </div>
-              <div className='absolute top-12 left-[5%] z-10'>
+              <div className='absolute top-12 left-[5%] '>
                 {list.textLists.map((text) => (
                   <p key={text} className='md:text-2xl text-xl font-medium'>
                     {text}
@@ -133,10 +147,13 @@ const VideoComponents = () => {
           {videoRef.current.map((_, i) => (
             <span
               key={i}
-              className='w-3 h-3 rounded-full bg-white mx-2  cursor-pointer'
+              className='w-3 h-3 rounded-full bg-white mx-2  cursor-pointer relative'
               ref={(el) => (VideoDivRef.current[i] = el)}
             >
-              <span className='absolute h-full w-full rounded-full' />
+              <span
+                className='absolute h-full w-full rounded-full'
+                ref={(el) => (videoSpanRef.current[i] = el)}
+              />
             </span>
           ))}
         </div>
