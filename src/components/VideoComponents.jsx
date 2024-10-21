@@ -19,6 +19,12 @@ const VideoComponents = () => {
   const { isEnd, startPlay, videoId, isPlaying, isLastVideo } = video;
 
   useGSAP(() => {
+    gsap.to("#slider", {
+      transform: `translateX(${-100 * videoId}%)`,
+      duration: 2,
+      ease: "power2.inOut",
+    });
+
     gsap.to("#video", {
       scrollTrigger: {
         trigger: "#video",
@@ -100,8 +106,32 @@ const VideoComponents = () => {
           }
         },
 
-        onComplete: () => {},
+        onComplete: () => {
+          if (isPlaying) {
+            gsap.to(VideoDivRef.current[videoId], {
+              width: "12px",
+            });
+            gsap.to(span[videoId], {
+              backgroundColor: "gray",
+            });
+          }
+        },
       });
+      if (videoId === 0) {
+        anim.restart();
+      }
+
+      const animUpdate = () => {
+        anim.progress(
+          videoRef.current[video].currentTime /
+            highlightSlide[videoId].videoDuration
+        );
+      };
+      if (isPlaying) {
+        gsap.ticker.add(animUpdate);
+      } else {
+        gsap.ticker.remove(animUpdate);
+      }
     }
   }, [startPlay, isPlaying, isEnd]);
 
@@ -116,6 +146,14 @@ const VideoComponents = () => {
                   id='video'
                   playsInline={true}
                   preload='auto'
+                  className={`${
+                    list.id === 2 && "translate-x-44"
+                  } pointer-events-none`}
+                  onEnded={() =>
+                    i !== 3
+                      ? handleProcess("video-end", i)
+                      : handleProcess("video-last")
+                  }
                   muted
                   ref={(el) => (videoRef.current[i] = el)}
                   onPlay={() => {
