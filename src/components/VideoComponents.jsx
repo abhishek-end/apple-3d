@@ -123,8 +123,7 @@ const VideoComponents = () => {
 
       const animUpdate = () => {
         anim.progress(
-          videoRef.current[video].currentTime /
-            highlightSlide[videoId].videoDuration
+          videoRef.current[video] / highlightSlide[videoId].videoDuration
         );
       };
       if (isPlaying) {
@@ -157,12 +156,10 @@ const VideoComponents = () => {
                   muted
                   ref={(el) => (videoRef.current[i] = el)}
                   onPlay={() => {
-                    setVideo(
-                      (prevVideo = {
-                        ...prevVideo,
-                        isPlaying: true,
-                      })
-                    );
+                    setVideo((prev) => ({
+                      ...prev,
+                      isPlaying: true,
+                    }));
                   }}
                   onLoadedMetadata={(e) => handleLoadedMetaData(e, i)}
                 >

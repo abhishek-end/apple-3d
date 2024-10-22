@@ -21,7 +21,7 @@ const Highlights = () => {
       scrollTrigger: {
         start: "top top",
         end: "bottom bottom",
-        markers: true,
+        // markers: true,
         stagger: 0.25,
       },
     });
